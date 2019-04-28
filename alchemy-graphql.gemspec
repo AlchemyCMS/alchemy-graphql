@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.homepage    = "https://alchemy-cms.com"
   spec.summary     = "Alchemy::GraphQL"
   spec.description = "Description of Alchemy::GraphQL"
-  spec.license     = "MIT"
+  spec.license     = "BSD-3-Clause"
   spec.files = Dir["{app,config,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 
   spec.add_dependency "alchemy_cms", ">= 4.2.0.rc1", "< 5"
