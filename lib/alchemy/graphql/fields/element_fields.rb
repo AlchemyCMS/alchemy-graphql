@@ -4,12 +4,12 @@ module Alchemy
   module GraphQL
     module ElementFields
       def self.included(query)
-        query.field :element_by_id, ElementType, null: true do
+        query.field :alchemy_element_by_id, ElementType, null: true do
           description "Find Alchemy Element by `id`"
           argument :id, ::GraphQL::Types::ID, required: true
         end
 
-        query.field :element_by_name, ElementType, null: true do
+        query.field :alchemy_element_by_name, ElementType, null: true do
           description "Find Alchemy Element by name. " \
             "You need to pass an exact `name` unless you also pass `exactMatch: false`."
           argument :name, ::GraphQL::Types::String, required: true
@@ -17,11 +17,11 @@ module Alchemy
         end
       end
 
-      def element_by_id(id:)
+      def alchemy_element_by_id(id:)
         Alchemy::Element.find_by(id: id)
       end
 
-      def element_by_name(name:, exact_match: true)
+      def alchemy_element_by_name(name:, exact_match: true)
         if exact_match
           Alchemy::Element.find_by(name: name)
         else
