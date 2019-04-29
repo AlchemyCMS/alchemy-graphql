@@ -1,3 +1,10 @@
+- name: header
+  contents:
+    - name: greeting
+      type: EssenceText
+    - name: hero_image
+      type: EssencePicture
+
 - name: article
   contents:
     - name: headline

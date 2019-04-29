@@ -1,5 +1,7 @@
 - name: standard
   elements:
+    - header
     - article
   autogenerate:
+    - header
     - article
