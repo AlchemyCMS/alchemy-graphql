@@ -1,4 +1,6 @@
 [![CircleCI](https://circleci.com/gh/AlchemyCMS/alchemy-graphql/tree/master.svg?style=svg)](https://circleci.com/gh/AlchemyCMS/alchemy-graphql/tree/master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/d5ccbf59314f813ce195/maintainability)](https://codeclimate.com/github/AlchemyCMS/alchemy-graphql/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/d5ccbf59314f813ce195/test_coverage)](https://codeclimate.com/github/AlchemyCMS/alchemy-graphql/test_coverage)
 
 # AlchemyCMS GraphQL API
 Add a GraphQL API to your AlchemyCMS powered site.
