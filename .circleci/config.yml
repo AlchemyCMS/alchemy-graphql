@@ -37,6 +37,14 @@ jobs:
       - run: cd spec/dummy; bin/rake db:create
       - run: cd spec/dummy; bin/rake db:schema:load
 
+      # Test coverage setup
+      - run:
+          name: Setup Code Climate test-reporter
+          command: |
+          # download test reporter as a static binary
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+
       # run tests!
       - run:
           name: run tests
@@ -44,13 +52,16 @@ jobs:
             mkdir /tmp/test-results
             TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | \
               circleci tests split --split-by=timings)"
-
+          # notify Code Climate of a pending test report using `before-build`
+            ./cc-test-reporter before-build
             bundle exec rspec \
               --format progress \
               --format RspecJunitFormatter \
               --out /tmp/test-results/rspec.xml \
               --format progress \
               $TEST_FILES
+          # upload test report to Code Climate using `after-build`
+            ./cc-test-reporter after-build --coverage-input-type simplecov --exit-code $?
 
       # collect reports
       - store_test_results:
