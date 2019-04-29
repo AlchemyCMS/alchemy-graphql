@@ -7,7 +7,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 gemspec
 
 gem 'alchemy_cms', github: 'AlchemyCMS/alchemy_cms'
-gem 'sqlite3', '~> 1.3.6' if ENV['DB'].nil? || ENV['DB'] == 'sqlite'
+gem 'sqlite3', '~> 1.4.0' if ENV['DB'].nil? || ENV['DB'] == 'sqlite'
 gem 'mysql2', '~> 0.5.1' if ENV['DB'] == 'mysql'
 gem 'pg', '~> 1.0' if ENV['DB'] == 'postgresql'
 gem 'sassc-rails'
