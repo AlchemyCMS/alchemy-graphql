@@ -9,6 +9,10 @@ module Alchemy
       field :element, Alchemy::GraphQL::ElementType, null: false
       field :name, String, null: false
       field :ingredient, String, null: true
+
+      def ingredient
+        object.serialized_ingredient
+      end
     end
   end
 end
