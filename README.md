@@ -182,7 +182,7 @@ will return
 
 ```graphql
 query {
-  page: alchemyElementByName(name: "article") {
+  element: alchemyElementByName(name: "article") {
     name
     contents(only: "headline") {
       ingredient
@@ -212,7 +212,7 @@ It is also possible to find elements by a name match instead of an exact name.
 
 ```graphql
 query {
-  page: alchemyElementByName(name: 'head', exactMatch: false) {
+  element: alchemyElementByName(name: 'head', exactMatch: false) {
     name
   }
 }
