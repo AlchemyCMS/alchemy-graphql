@@ -4,47 +4,45 @@ require 'alchemy/test_support/factories/page_factory'
 RSpec.describe 'Querying pages' do
   let(:page) { create(:alchemy_page, :public) }
 
-  context 'using alchemyPageByName' do
-    it 'works' do
-      post '/graphql', params: {
-        query: %[{ page: alchemyPageByName(name: "#{page.name}") { name } }]
-      }
-      json = JSON.parse(response.body)
-      expect(json).to have_key('data')
-      expect(json['data']).to have_key('page')
-      expect(json.dig('data', 'page', 'name')).to eq page.name
-    end
-
-    describe 'elements can be filtered' do
-      let(:page) do
-        create(:alchemy_page, autogenerate_elements: true)
-      end
-
-      it 'by only' do
+  describe 'using alchemyPageByName' do
+    context 'with exactMatch' do
+      it 'works' do
         post '/graphql', params: {
-          query: %[{
-            page: alchemyPageByName(name: "#{page.name}") {
-              elements(only: "article") {
-                name
-              }
-            }
-          }]
+          query: %[{ page: alchemyPageByName(name: "#{page.name}") { name } }]
         }
         json = JSON.parse(response.body)
         expect(json).to have_key('data')
         expect(json['data']).to have_key('page')
-        expect(json.dig('data', 'page', 'elements')).to match_array([
-          {
-            "name" => "article"
-          }
-        ])
+        expect(json.dig('data', 'page', 'name')).to eq page.name
+      end
+    end
+
+    context 'without exactMatch' do
+      let!(:page) do
+        create(:alchemy_page, name: 'Contact Us', urlname: 'contact-us')
       end
 
-      it 'by except' do
+      it 'works' do
+        post '/graphql', params: {
+          query: %[{ page: alchemyPageByName(name: "Contact", exactMatch: false) { name } }]
+        }
+        json = JSON.parse(response.body)
+        expect(json).to have_key('data')
+        expect(json['data']).to have_key('page')
+        expect(json.dig('data', 'page', 'name')).to eq page.name
+      end
+    end
+
+    describe 'elements' do
+      let(:page) do
+        create(:alchemy_page, autogenerate_elements: true)
+      end
+
+      it 'can be included' do
         post '/graphql', params: {
           query: %[{
             page: alchemyPageByName(name: "#{page.name}") {
-              elements(except: "article") {
+              elements {
                 name
               }
             }
@@ -56,13 +54,58 @@ RSpec.describe 'Querying pages' do
         expect(json.dig('data', 'page', 'elements')).to match_array([
           {
             "name" => "header"
+          },
+          {
+            "name" => "article"
           }
         ])
+      end
+
+      describe 'can be filtered' do
+        it 'by only' do
+          post '/graphql', params: {
+            query: %[{
+              page: alchemyPageByName(name: "#{page.name}") {
+                elements(only: "article") {
+                  name
+                }
+              }
+            }]
+          }
+          json = JSON.parse(response.body)
+          expect(json).to have_key('data')
+          expect(json['data']).to have_key('page')
+          expect(json.dig('data', 'page', 'elements')).to match_array([
+            {
+              "name" => "article"
+            }
+          ])
+        end
+
+        it 'by except' do
+          post '/graphql', params: {
+            query: %[{
+              page: alchemyPageByName(name: "#{page.name}") {
+                elements(except: "article") {
+                  name
+                }
+              }
+            }]
+          }
+          json = JSON.parse(response.body)
+          expect(json).to have_key('data')
+          expect(json['data']).to have_key('page')
+          expect(json.dig('data', 'page', 'elements')).to match_array([
+            {
+              "name" => "header"
+            }
+          ])
+        end
       end
     end
   end
 
-  context 'using alchemyPageById' do
+  describe 'using alchemyPageById' do
     it 'works' do
       post '/graphql', params: {
         query: %[{ page: alchemyPageById(id: "#{page.id}") { name } }]
@@ -74,15 +117,33 @@ RSpec.describe 'Querying pages' do
     end
   end
 
-  context 'using alchemyPageByUrl' do
-    it 'works' do
-      post '/graphql', params: {
-        query: %[{ page: alchemyPageByUrl(url: "#{page.urlname}") { name } }]
-      }
-      json = JSON.parse(response.body)
-      expect(json).to have_key('data')
-      expect(json['data']).to have_key('page')
-      expect(json.dig('data', 'page', 'name')).to eq page.name
+  describe 'using alchemyPageByUrl' do
+    describe 'with exactMatch' do
+      it 'works' do
+        post '/graphql', params: {
+          query: %[{ page: alchemyPageByUrl(url: "#{page.urlname}") { name } }]
+        }
+        json = JSON.parse(response.body)
+        expect(json).to have_key('data')
+        expect(json['data']).to have_key('page')
+        expect(json.dig('data', 'page', 'name')).to eq page.name
+      end
+    end
+
+    describe 'without exactMatch' do
+      let!(:page) do
+        create(:alchemy_page, name: 'Contact Us', urlname: 'contact-us')
+      end
+
+      it 'works' do
+        post '/graphql', params: {
+          query: %[{ page: alchemyPageByUrl(url: "contact", exactMatch: false) { name } }]
+        }
+        json = JSON.parse(response.body)
+        expect(json).to have_key('data')
+        expect(json['data']).to have_key('page')
+        expect(json.dig('data', 'page', 'name')).to eq page.name
+      end
     end
   end
 end

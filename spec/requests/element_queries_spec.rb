@@ -17,18 +17,22 @@ RSpec.describe 'Querying elements' do
     end
   end
 
-  describe 'contents can be filtered' do
+  describe 'contents' do
     let(:element) do
       create(:alchemy_element, name: 'header', autogenerate_contents: true).tap do |element|
         element.content_by_name(:greeting).essence.update(body: 'Hello World')
       end
     end
 
-    it 'by only' do
+    before do
+      allow_any_instance_of(Alchemy::EssencePicture).to receive(:picture_url) { '/foo/image/url' }
+    end
+
+    it 'can be included' do
       post '/graphql', params: {
         query: %[{
           element: alchemyElementByName(name: "#{element.name}") {
-            contents(only: "greeting") {
+            contents {
               ingredient
             }
           }
@@ -40,29 +44,53 @@ RSpec.describe 'Querying elements' do
       expect(json.dig('data', 'element', 'contents')).to match_array([
         {
           "ingredient" => "Hello World"
-        }
-      ])
-    end
-
-    it 'by except' do
-      allow_any_instance_of(Alchemy::EssencePicture).to receive(:picture_url) { '/foo/image/url' }
-      post '/graphql', params: {
-        query: %[{
-          element: alchemyElementByName(name: "#{element.name}") {
-            contents(except: "greeting") {
-              ingredient
-            }
-          }
-        }]
-      }
-      json = JSON.parse(response.body)
-      expect(json).to have_key('data')
-      expect(json['data']).to have_key('element')
-      expect(json.dig('data', 'element', 'contents')).to match_array([
+        },
         {
           "ingredient" => "/foo/image/url"
         }
       ])
+    end
+
+    describe 'can be filtered' do
+      it 'by only' do
+        post '/graphql', params: {
+          query: %[{
+            element: alchemyElementByName(name: "#{element.name}") {
+              contents(only: "greeting") {
+                ingredient
+              }
+            }
+          }]
+        }
+        json = JSON.parse(response.body)
+        expect(json).to have_key('data')
+        expect(json['data']).to have_key('element')
+        expect(json.dig('data', 'element', 'contents')).to match_array([
+          {
+            "ingredient" => "Hello World"
+          }
+        ])
+      end
+
+      it 'by except' do
+        post '/graphql', params: {
+          query: %[{
+            element: alchemyElementByName(name: "#{element.name}") {
+              contents(except: "greeting") {
+                ingredient
+              }
+            }
+          }]
+        }
+        json = JSON.parse(response.body)
+        expect(json).to have_key('data')
+        expect(json['data']).to have_key('element')
+        expect(json.dig('data', 'element', 'contents')).to match_array([
+          {
+            "ingredient" => "/foo/image/url"
+          }
+        ])
+      end
     end
   end
 
