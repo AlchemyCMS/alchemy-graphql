@@ -22,7 +22,7 @@ module Dummy
     config.load_defaults 5.2
 
     # Reload files from gem when they change
-    config.autoload_paths += [File.join(__dir__, '..', '..', '..', 'lib')]
+    config.autoload_paths += [Alchemy::GraphQL::Engine.root.join("lib").to_s]
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers
