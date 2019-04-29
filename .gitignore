@@ -7,3 +7,4 @@ spec/dummy/yarn-error.log
 spec/dummy/tmp/
 /Gemfile.lock
 *.sqlite3
+coverage
