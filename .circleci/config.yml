@@ -8,9 +8,9 @@ jobs:
     environment:
       DB: postgresql
 
-      docker:
-        - image: circleci/ruby:2.6
-        - image: circleci/postgres:9.6
+    docker:
+      - image: circleci/ruby:2.6
+      - image: circleci/postgres:9.6
 
     steps:
       - checkout
