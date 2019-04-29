@@ -14,3 +14,9 @@ gem 'sassc-rails'
 gem 'graphiql-rails', '~> 1.7'
 gem 'pry-rails'
 gem 'listen'
+
+if ENV['CI']
+  group :test do
+    gem 'rspec_junit_formatter', '~> 0.4'
+  end
+end
