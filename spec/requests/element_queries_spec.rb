@@ -5,17 +5,24 @@ require 'alchemy/test_support/factories/element_factory'
 RSpec.describe 'Querying elements' do
   let(:element) { create(:alchemy_element) }
 
-  describe 'using alchemyElementByName' do
+  shared_examples 'an element query' do
+    it 'returns element' do
+      json = JSON.parse(response.body)
+      expect(json).to have_key('data')
+      expect(json['data']).to have_key('element')
+      expect(json.dig('data', 'element', 'name')).to eq element.name
+    end
+  end
+
+  describe 'by name' do
     context 'with exactMatch' do
-      it 'works' do
+      subject! do
         post '/graphql', params: {
-          query: %[{ element: alchemyElementByName(name: "#{element.name}") { name } }]
+          query: %[{ element: alchemyElement(name: "#{element.name}") { name } }]
         }
-        json = JSON.parse(response.body)
-        expect(json).to have_key('data')
-        expect(json['data']).to have_key('element')
-        expect(json.dig('data', 'element', 'name')).to eq element.name
       end
+
+      it_behaves_like 'an element query'
     end
 
     context 'without exactMatch' do
@@ -23,15 +30,13 @@ RSpec.describe 'Querying elements' do
         create(:alchemy_element, name: 'header')
       end
 
-      it 'works' do
+      subject! do
         post '/graphql', params: {
-          query: %[{ element: alchemyElementByName(name: "head", exactMatch: false) { name } }]
+          query: %[{ element: alchemyElement(name: "head", exactMatch: false) { name } }]
         }
-        json = JSON.parse(response.body)
-        expect(json).to have_key('data')
-        expect(json['data']).to have_key('element')
-        expect(json.dig('data', 'element', 'name')).to eq element.name
       end
+
+      it_behaves_like 'an element query'
     end
   end
 
@@ -49,7 +54,7 @@ RSpec.describe 'Querying elements' do
     it 'can be included' do
       post '/graphql', params: {
         query: %[{
-          element: alchemyElementByName(name: "#{element.name}") {
+          element: alchemyElement(name: "#{element.name}") {
             contents {
               ingredient
             }
@@ -73,7 +78,7 @@ RSpec.describe 'Querying elements' do
       it 'by only' do
         post '/graphql', params: {
           query: %[{
-            element: alchemyElementByName(name: "#{element.name}") {
+            element: alchemyElement(name: "#{element.name}") {
               contents(only: "greeting") {
                 ingredient
               }
@@ -93,7 +98,7 @@ RSpec.describe 'Querying elements' do
       it 'by except' do
         post '/graphql', params: {
           query: %[{
-            element: alchemyElementByName(name: "#{element.name}") {
+            element: alchemyElement(name: "#{element.name}") {
               contents(except: "greeting") {
                 ingredient
               }
@@ -112,15 +117,13 @@ RSpec.describe 'Querying elements' do
     end
   end
 
-  describe 'using alchemyElementById' do
-    it 'works' do
+  describe 'by id' do
+    subject! do
       post '/graphql', params: {
-        query: %[{ element: alchemyElementById(id: "#{element.id}") { name } }]
+        query: %[{ element: alchemyElement(id: "#{element.id}") { name } }]
       }
-      json = JSON.parse(response.body)
-      expect(json).to have_key('data')
-      expect(json['data']).to have_key('element')
-      expect(json.dig('data', 'element', 'name')).to eq element.name
     end
+
+    it_behaves_like 'an element query'
   end
 end
