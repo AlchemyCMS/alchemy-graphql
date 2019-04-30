@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'alchemy/graphql/schema'
-
 module Alchemy
   class GraphqlController < ApplicationController
     include Alchemy::ControllerActions

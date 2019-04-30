@@ -5,6 +5,7 @@ require 'alchemy_cms'
 
 module Alchemy
   module GraphQL
+    autoload :Schema,        'alchemy/graphql/schema'
     autoload :Query,         'alchemy/graphql/query'
     autoload :PageFields,    'alchemy/graphql/fields/page_fields'
     autoload :ElementFields, 'alchemy/graphql/fields/element_fields'
