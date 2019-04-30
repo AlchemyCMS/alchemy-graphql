@@ -12,7 +12,7 @@ gem 'mysql2', '~> 0.5.1' if ENV['DB'] == 'mysql'
 gem 'pg', '~> 1.0' if ENV['DB'] == 'postgresql'
 gem 'sassc-rails'
 gem 'graphiql-rails', '~> 1.7'
-gem 'pry-rails'
+gem 'pry-byebug'
 gem 'listen'
 
 if ENV['CI']
