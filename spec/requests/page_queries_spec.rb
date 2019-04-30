@@ -4,17 +4,24 @@ require 'alchemy/test_support/factories/page_factory'
 RSpec.describe 'Querying pages' do
   let(:page) { create(:alchemy_page, :public) }
 
-  describe 'using alchemyPageByName' do
+  shared_examples 'a page query' do
+    it 'returns page' do
+      json = JSON.parse(response.body)
+      expect(json).to have_key('data')
+      expect(json['data']).to have_key('page')
+      expect(json.dig('data', 'page', 'name')).to eq page.name
+    end
+  end
+
+  describe 'by name' do
     context 'with exactMatch' do
-      it 'works' do
+      subject! do
         post '/graphql', params: {
-          query: %[{ page: alchemyPageByName(name: "#{page.name}") { name } }]
+          query: %[{ page: alchemyPage(name: "#{page.name}") { name } }]
         }
-        json = JSON.parse(response.body)
-        expect(json).to have_key('data')
-        expect(json['data']).to have_key('page')
-        expect(json.dig('data', 'page', 'name')).to eq page.name
       end
+
+      it_behaves_like 'a page query'
     end
 
     context 'without exactMatch' do
@@ -22,15 +29,28 @@ RSpec.describe 'Querying pages' do
         create(:alchemy_page, name: 'Contact Us', urlname: 'contact-us')
       end
 
-      it 'works' do
+      subject! do
         post '/graphql', params: {
-          query: %[{ page: alchemyPageByName(name: "Contact", exactMatch: false) { name } }]
+          query: %[{ page: alchemyPage(name: "Contact", exactMatch: false) { name } }]
         }
-        json = JSON.parse(response.body)
-        expect(json).to have_key('data')
-        expect(json['data']).to have_key('page')
-        expect(json.dig('data', 'page', 'name')).to eq page.name
       end
+
+      it_behaves_like 'a page query'
+    end
+
+    context 'and by page_layout' do
+      subject! do
+        post '/graphql', params: {
+          query: %[{
+            page: alchemyPage(
+              pageLayout: "#{page.page_layout}"
+              name: "#{page.name}"
+            ) { name }
+          }]
+        }
+      end
+
+      it_behaves_like 'a page query'
     end
 
     describe 'elements' do
@@ -41,7 +61,7 @@ RSpec.describe 'Querying pages' do
       it 'can be included' do
         post '/graphql', params: {
           query: %[{
-            page: alchemyPageByName(name: "#{page.name}") {
+            page: alchemyPage(name: "#{page.name}") {
               elements {
                 name
               }
@@ -65,7 +85,7 @@ RSpec.describe 'Querying pages' do
         it 'by only' do
           post '/graphql', params: {
             query: %[{
-              page: alchemyPageByName(name: "#{page.name}") {
+              page: alchemyPage(name: "#{page.name}") {
                 elements(only: "article") {
                   name
                 }
@@ -85,7 +105,7 @@ RSpec.describe 'Querying pages' do
         it 'by except' do
           post '/graphql', params: {
             query: %[{
-              page: alchemyPageByName(name: "#{page.name}") {
+              page: alchemyPage(name: "#{page.name}") {
                 elements(except: "article") {
                   name
                 }
@@ -105,29 +125,25 @@ RSpec.describe 'Querying pages' do
     end
   end
 
-  describe 'using alchemyPageById' do
-    it 'works' do
+  describe 'by id' do
+    subject! do
       post '/graphql', params: {
-        query: %[{ page: alchemyPageById(id: "#{page.id}") { name } }]
+        query: %[{ page: alchemyPage(id: "#{page.id}") { name } }]
       }
-      json = JSON.parse(response.body)
-      expect(json).to have_key('data')
-      expect(json['data']).to have_key('page')
-      expect(json.dig('data', 'page', 'name')).to eq page.name
     end
+
+    it_behaves_like 'a page query'
   end
 
-  describe 'using alchemyPageByUrl' do
+  describe 'by urlname' do
     describe 'with exactMatch' do
-      it 'works' do
+      subject! do
         post '/graphql', params: {
-          query: %[{ page: alchemyPageByUrl(url: "#{page.urlname}") { name } }]
+          query: %[{ page: alchemyPage(urlname: "#{page.urlname}") { name } }]
         }
-        json = JSON.parse(response.body)
-        expect(json).to have_key('data')
-        expect(json['data']).to have_key('page')
-        expect(json.dig('data', 'page', 'name')).to eq page.name
       end
+
+      it_behaves_like 'a page query'
     end
 
     describe 'without exactMatch' do
@@ -135,15 +151,39 @@ RSpec.describe 'Querying pages' do
         create(:alchemy_page, name: 'Contact Us', urlname: 'contact-us')
       end
 
-      it 'works' do
+      subject! do
         post '/graphql', params: {
-          query: %[{ page: alchemyPageByUrl(url: "contact", exactMatch: false) { name } }]
+          query: %[{ page: alchemyPage(urlname: "contact", exactMatch: false) { name } }]
         }
-        json = JSON.parse(response.body)
-        expect(json).to have_key('data')
-        expect(json['data']).to have_key('page')
-        expect(json.dig('data', 'page', 'name')).to eq page.name
       end
+
+      it_behaves_like 'a page query'
+    end
+  end
+
+  describe 'by page_layout' do
+    describe 'with exactMatch' do
+      subject! do
+        post '/graphql', params: {
+          query: %[{ page: alchemyPage(pageLayout: "#{page.page_layout}") { name } }]
+        }
+      end
+
+      it_behaves_like 'a page query'
+    end
+
+    describe 'without exactMatch' do
+      let!(:page) do
+        create(:alchemy_page, page_layout: 'standard')
+      end
+
+      subject! do
+        post '/graphql', params: {
+          query: %[{ page: alchemyPage(pageLayout: "stand", exactMatch: false) { name } }]
+        }
+      end
+
+      it_behaves_like 'a page query'
     end
   end
 end
