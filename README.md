@@ -61,13 +61,19 @@ end
 
 We recommend using [GraphiQL](https://github.com/rmosolgo/graphiql-rails) in your app to have an interactive API explorer in your browser.
 
-Nevertheless here are some example queries.
+### Online demo
 
-### Find an Alchemy page by its name
+We also provide an online demo for you to play with:
+
+https://demo.alchemy-cms.com/graphiql
+
+### Example queries
+
+#### Find an Alchemy page by its name
 
 ```graphql
 query {
-  page: alchemyPageByName(name: "A page") {
+  page: alchemyPage(name: "A page") {
     name
     elements(only: "article") {
       contents(only: "headline") {
@@ -103,7 +109,7 @@ It is also possible to find pages by a name match instead of an exact name.
 
 ```graphql
 query {
-  page: alchemyPageByName(name: "Contact", exactMatch: false) {
+  page: alchemyPage(name: "Contact", exactMatch: false) {
     name
   }
 }
@@ -121,11 +127,11 @@ will return
 }
 ```
 
-### Find an Alchemy page by its url
+#### Find an Alchemy page by its urlname
 
 ```graphql
 query {
-  page: alchemyPageByUrl(url: "a-page") {
+  page: alchemyPage(urlname: "a-page") {
     elements {
       contents {
         ingredient
@@ -158,11 +164,11 @@ will return
 }
 ```
 
-It is also possible to find pages by an url match instead of an exact url.
+It is also possible to find pages by an urlname match instead of an exact urlname.
 
 ```graphql
 query {
-  page: alchemyPageByUrl(url: "contact", exactMatch: false) {
+  page: alchemyPage(urlname: "contact", exactMatch: false) {
     urlname
   }
 }
@@ -180,11 +186,39 @@ will return
 }
 ```
 
-### Find an Alchemy element by its name
+#### Find an Alchemy page by several attributes
+
+You can even combine attributes to narrow down the result.
 
 ```graphql
 query {
-  element: alchemyElementByName(name: "article") {
+  page: alchemyPage(
+    name: "Foot",
+    pageLayout: "footer",
+    exactMatch: false
+  ) {
+    name
+  }
+}
+```
+
+will return
+
+```json
+{
+  "data": {
+    "page": {
+      "name": "Footer"
+    }
+  }
+}
+```
+
+#### Find an Alchemy element by its name
+
+```graphql
+query {
+  element: alchemyElement(name: "article") {
     name
     contents(only: "headline") {
       ingredient
@@ -214,7 +248,7 @@ It is also possible to find elements by a name match instead of an exact name.
 
 ```graphql
 query {
-  element: alchemyElementByName(name: 'head', exactMatch: false) {
+  element: alchemyElement(name: "head", exactMatch: false) {
     name
   }
 }
@@ -228,6 +262,73 @@ will return
     "element": {
       "name": "header"
     }
+  }
+}
+```
+
+#### Find Alchemy elements by name
+
+```graphql
+query {
+  elements: alchemyElements(only: "article") {
+    name
+    contents(only: "headline") {
+      ingredient
+    }
+  }
+}
+```
+
+will return
+
+```json
+{
+  "data": {
+    "elements": [
+      {
+        "name": "article",
+        "contents": [
+          {
+            "ingredient": "My first headline"
+          }
+        ]
+      },
+      {
+        "name": "article",
+        "contents": [
+          {
+            "ingredient": "My second headline"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+It is also possible to exclude elements by name.
+
+```graphql
+query {
+  elements: alchemyElements(except: "article") {
+    name
+  }
+}
+```
+
+will return
+
+```json
+{
+  "data": {
+    "elements": [
+      {
+        "name": "header"
+      },
+      {
+        "name": "footer"
+      }
+    ]
   }
 }
 ```
