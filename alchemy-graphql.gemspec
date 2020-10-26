@@ -20,5 +20,5 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "rspec-rails", "~> 3.8"
   spec.add_development_dependency "factory_bot_rails", "~> 5.0"
-  spec.add_development_dependency "simplecov", "~> 0.17.1"
+  spec.add_development_dependency "simplecov", "~> 0.19.1"
 end
