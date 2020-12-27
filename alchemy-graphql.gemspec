@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "alchemy_cms", ">= 4.2.0.rc1", "< 5"
   spec.add_dependency "graphql", "~> 1.9"
 
-  spec.add_development_dependency "rspec-rails", "~> 3.8"
+  spec.add_development_dependency "rspec-rails", "~> 4.0"
   spec.add_development_dependency "factory_bot_rails", "~> 5.0"
   spec.add_development_dependency "simplecov", "~> 0.17.1"
 end
