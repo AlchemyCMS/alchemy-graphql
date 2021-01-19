@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir["{app,config,lib}/**/*", "LICENSE", "Rakefile", "README.md"]
 
   spec.add_dependency "alchemy_cms", ">= 4.2.0.rc1", "< 5"
-  spec.add_dependency "graphql", "~> 1.9"
+  spec.add_dependency "graphql", "1.11.7"
 
   spec.add_development_dependency "rspec-rails", "~> 3.8"
   spec.add_development_dependency "factory_bot_rails", "~> 5.0"
