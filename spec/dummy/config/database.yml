@@ -11,7 +11,8 @@ mysql: &mysql
 postgresql: &postgresql
   adapter: postgresql
   <% if ENV['CI'] %>
-  username: postgres
+  username: alchemy_user
+  password: password
   <% end %>
   database: alchemy-graphl_dummy_<%= Rails.env %>
   min_messages: ERROR
