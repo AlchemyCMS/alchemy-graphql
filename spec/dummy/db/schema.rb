@@ -2,15 +2,15 @@
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
 #
-# Note that this schema.rb definition is the authoritative source for your
-# database schema. If you need to create the application database on another
-# system, you should be using db:schema:load, not running all the migrations
-# from scratch. The latter is a flawed and unsustainable approach (the more migrations
-# you'll amass, the slower it'll run and the greater likelihood for issues).
+# This file is the source Rails uses to define your schema when running `rails
+# db:schema:load`. When creating a new database, `rails db:schema:load` tends to
+# be faster and is potentially less error prone than running all of your
+# migrations from scratch. Old migrations may fail to apply correctly if those
+# migrations use external dependencies or application code.
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_28_123703) do
+ActiveRecord::Schema.define(version: 2022_05_29_161330) do
 
   create_table "alchemy_attachments", force: :cascade do |t|
     t.string "name"
@@ -110,6 +110,18 @@ ActiveRecord::Schema.define(version: 2019_04_28_123703) do
     t.integer "updater_id"
   end
 
+  create_table "alchemy_essence_nodes", force: :cascade do |t|
+    t.integer "node_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["node_id"], name: "index_alchemy_essence_nodes_on_node_id"
+  end
+
+  create_table "alchemy_essence_pages", force: :cascade do |t|
+    t.integer "page_id"
+    t.index ["page_id"], name: "index_alchemy_essence_pages_on_page_id"
+  end
+
   create_table "alchemy_essence_pictures", force: :cascade do |t|
     t.integer "picture_id"
     t.string "caption"
@@ -197,6 +209,33 @@ ActiveRecord::Schema.define(version: 2019_04_28_123703) do
     t.index ["urlname"], name: "index_alchemy_legacy_page_urls_on_urlname"
   end
 
+  create_table "alchemy_nodes", force: :cascade do |t|
+    t.string "name"
+    t.string "title"
+    t.string "url"
+    t.boolean "nofollow", default: false, null: false
+    t.boolean "external", default: false, null: false
+    t.boolean "folded", default: false, null: false
+    t.integer "parent_id"
+    t.integer "lft", null: false
+    t.integer "rgt", null: false
+    t.integer "depth", default: 0, null: false
+    t.integer "page_id"
+    t.integer "language_id", null: false
+    t.integer "creator_id"
+    t.integer "updater_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "menu_type", null: false
+    t.index ["creator_id"], name: "index_alchemy_nodes_on_creator_id"
+    t.index ["language_id"], name: "index_alchemy_nodes_on_language_id"
+    t.index ["lft"], name: "index_alchemy_nodes_on_lft"
+    t.index ["page_id"], name: "index_alchemy_nodes_on_page_id"
+    t.index ["parent_id"], name: "index_alchemy_nodes_on_parent_id"
+    t.index ["rgt"], name: "index_alchemy_nodes_on_rgt"
+    t.index ["updater_id"], name: "index_alchemy_nodes_on_updater_id"
+  end
+
   create_table "alchemy_pages", force: :cascade do |t|
     t.string "name"
     t.string "urlname"
@@ -210,18 +249,17 @@ ActiveRecord::Schema.define(version: 2019_04_28_123703) do
     t.integer "rgt"
     t.integer "parent_id"
     t.integer "depth"
-    t.boolean "visible", default: false
     t.integer "locked_by"
     t.boolean "restricted", default: false
     t.boolean "robot_index", default: true
     t.boolean "robot_follow", default: true
     t.boolean "sitemap", default: true
-    t.boolean "layoutpage", default: false
+    t.boolean "layoutpage", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "creator_id"
     t.integer "updater_id"
-    t.integer "language_id"
+    t.integer "language_id", null: false
     t.datetime "published_at"
     t.datetime "public_on"
     t.datetime "public_until"
@@ -279,4 +317,11 @@ ActiveRecord::Schema.define(version: 2019_04_28_123703) do
     t.index ["taggings_count"], name: "index_gutentag_tags_on_taggings_count"
   end
 
+  add_foreign_key "alchemy_contents", "alchemy_elements", column: "element_id", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "alchemy_elements", "alchemy_pages", column: "page_id", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "alchemy_essence_nodes", "alchemy_nodes", column: "node_id"
+  add_foreign_key "alchemy_essence_pages", "alchemy_pages", column: "page_id"
+  add_foreign_key "alchemy_nodes", "alchemy_languages", column: "language_id"
+  add_foreign_key "alchemy_nodes", "alchemy_pages", column: "page_id", on_delete: :cascade
+  add_foreign_key "alchemy_pages", "alchemy_languages", column: "language_id"
 end
